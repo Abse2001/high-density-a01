@@ -91,11 +91,7 @@ const commitCopper = (
     kind === "trace"
       ? [branchStart, { z: 0, row: 1, col: 1 }]
       : kind === "via"
-        ? [
-            branchStart,
-            { z: 0, row: 1, col: 1 },
-            { z: 1, row: 1, col: 1 },
-          ]
+        ? [branchStart, { z: 0, row: 1, col: 1 }, { z: 1, row: 1, col: 1 }]
         : [
             ...(connId === 1
               ? [{ z: 0, row: 0, col: 1 }]
@@ -119,13 +115,15 @@ const commitCopper = (
     endCol: last.col,
     endPoint: { x: last.col, y: last.row, z: last.z },
   }
-  probe.nodePool = cells.map((cell: Cell, index: number): SearchNode => ({
-    ...cell,
-    g: 0,
-    f: 0,
-    parentIdx: index - 1,
-    ripped,
-  }))
+  probe.nodePool = cells.map(
+    (cell: Cell, index: number): SearchNode => ({
+      ...cell,
+      g: 0,
+      f: 0,
+      parentIdx: index - 1,
+      ripped,
+    }),
+  )
   probe.finalizeRoute(cells.length - 1)
   probe.activeConnSeg = null
 }
@@ -146,7 +144,11 @@ const queryCopper = (
     null,
   )
   const owners: number[] = []
-  for (let node: RippedNode | null = probe._moveRipped; node; node = node.prev) {
+  for (
+    let node: RippedNode | null = probe._moveRipped;
+    node;
+    node = node.prev
+  ) {
     owners.push(node.id)
   }
   return owners.sort((left: number, right: number): number => left - right)
