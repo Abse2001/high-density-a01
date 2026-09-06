@@ -666,7 +666,7 @@ export class HighDensitySolverA03 extends BaseSolver {
       const existing = this.portOwnerFlat[flatIdx]!
       if (existing === -1 || existing === connId) {
         this.portOwnerFlat[flatIdx] = connId
-      } else {
+      } else if (this.connIdToRootNet[existing] !== rootNet) {
         this.portOwnerFlat[flatIdx] = -2
       }
     }

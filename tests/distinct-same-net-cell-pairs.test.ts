@@ -14,7 +14,13 @@ test("A01 and A03 retain distinct same-net terminal pairs that occupy the same g
       { x: -1, y: 0, z: 0, connectionName: "a", rootConnectionName: "shared" },
       { x: 1, y: 0, z: 0, connectionName: "a", rootConnectionName: "shared" },
       { x: -1, y: 0, z: 0, connectionName: "b", rootConnectionName: "shared" },
-      { x: 1, y: 0.0003, z: 0, connectionName: "b", rootConnectionName: "shared" },
+      {
+        x: 1,
+        y: 0.0003,
+        z: 0,
+        connectionName: "b",
+        rootConnectionName: "shared",
+      },
     ],
   }
 
