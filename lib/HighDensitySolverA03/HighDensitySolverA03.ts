@@ -2157,8 +2157,30 @@ export class HighDensitySolverA03 extends BaseSolver {
           points[0] = { ...route.startPoint }
           points.push({ ...route.endPoint })
         } else if (points.length > 1) {
-          points[0] = { ...route.startPoint }
-          points[points.length - 1] = { ...route.endPoint }
+          const firstPoint = points[0]!
+          const lastPoint = points[points.length - 1]!
+          const startsWithVia: boolean = firstPoint.z !== points[1]!.z
+          const endsWithVia: boolean =
+            lastPoint.z !== points[points.length - 2]!.z
+          // Keep routed via anchors; exact terminals connect on their own layer.
+          if (
+            startsWithVia &&
+            (firstPoint.x !== route.startPoint.x ||
+              firstPoint.y !== route.startPoint.y)
+          ) {
+            points.unshift({ ...route.startPoint })
+          } else {
+            points[0] = { ...route.startPoint }
+          }
+          if (
+            endsWithVia &&
+            (lastPoint.x !== route.endPoint.x ||
+              lastPoint.y !== route.endPoint.y)
+          ) {
+            points.push({ ...route.endPoint })
+          } else {
+            points[points.length - 1] = { ...route.endPoint }
+          }
         }
         result.push({
           connectionName: connName,
