@@ -691,7 +691,17 @@ export class HighDensitySolverA01 extends BaseSolver {
       const nIdx = (z * rows + nr) * cols + nc
       if (visited[nIdx] === stamp) continue
 
-      this.computeMoveCostAndRips(activeConn, z, row, col, z, nr, nc, ripped)
+      this.computeMoveCostAndRips(
+        activeConn,
+        z,
+        row,
+        col,
+        z,
+        nr,
+        nc,
+        ripped,
+        undefined,
+      )
       if (this._moveCost < 0) continue
       const g2 = g + this._moveCost
       const f2 =
@@ -720,6 +730,7 @@ export class HighDensitySolverA01 extends BaseSolver {
       col <= this.maxViaCol
 
     if (canVia) {
+      let viaOccupants: ConnId[] | undefined
       for (let nz = 0; nz < this.layers; nz++) {
         if (nz === z) continue
 
@@ -735,8 +746,10 @@ export class HighDensitySolverA01 extends BaseSolver {
           row,
           col,
           ripped,
+          viaOccupants,
         )
         if (this._moveCost < 0) continue
+        viaOccupants = this._viaOccs
         const g2 = g + this._moveCost
         const f2 =
           g2 +
@@ -775,6 +788,7 @@ export class HighDensitySolverA01 extends BaseSolver {
     toRow: number,
     toCol: number,
     ripped: RippedNode | null,
+    viaOccupants: ConnId[] | undefined,
   ): void {
     let cost = 0
     let r = ripped
@@ -809,9 +823,12 @@ export class HighDensitySolverA01 extends BaseSolver {
         return
       }
 
-      // Via footprint occupants (reusable scratch array)
-      this.fillViaOccupants(toRow, toCol, activeConn)
-      const occs = this._viaOccs
+      // Every destination layer uses the same all-layer copper footprint.
+      // Nothing mutates this scratch array between via neighbors.
+      if (viaOccupants === undefined) {
+        this.fillViaOccupants(toRow, toCol, activeConn)
+      }
+      const occs: ConnId[] = viaOccupants ?? this._viaOccs
       for (let i = 0; i < occs.length; i++) {
         const occ = occs[i]!
         if (!rippedContains(r, occ)) {

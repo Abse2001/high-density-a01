@@ -26,6 +26,7 @@ type A01PortProbe = SharedPortProbe & {
     toRow: number,
     toCol: number,
     ripped: null,
+    viaOccupants: number[] | undefined,
   ): void
 }
 type A03PortProbe = SharedPortProbe & {
@@ -40,6 +41,7 @@ type A03PortProbe = SharedPortProbe & {
     rippedHead: number,
     currentRipCount: number,
     lateralCost: number,
+    viaOccupants: number[] | undefined,
   ): void
 }
 type PortAdmission = {
@@ -83,6 +85,7 @@ const getSharedPortAdmission = (
       cell.row,
       cell.col,
       null,
+      undefined,
     )
     const sameRootMoveCost = probe._moveCost
     probe.activeConnSeg = foreignSegment
@@ -95,6 +98,7 @@ const getSharedPortAdmission = (
       cell.row,
       cell.col,
       null,
+      undefined,
     )
     const owner = probe.portOwnerFlat[flatIndex]!
     return {
@@ -118,6 +122,7 @@ const getSharedPortAdmission = (
     -1,
     0,
     0.1,
+    undefined,
   )
   const sameRootMoveCost = probe._moveCost
   probe.activeConnSeg = foreignSegment
@@ -129,6 +134,7 @@ const getSharedPortAdmission = (
     -1,
     0,
     0.1,
+    undefined,
   )
   const owner = probe.portOwnerFlat[flatIndex]!
   return {

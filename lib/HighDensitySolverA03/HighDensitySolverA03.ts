@@ -1180,6 +1180,7 @@ export class HighDensitySolverA03 extends BaseSolver {
         rippedHead,
         ripCount,
         this.neighborCosts[i]!,
+        undefined,
       )
       if (this._moveCost < 0) continue
 
@@ -1215,6 +1216,7 @@ export class HighDensitySolverA03 extends BaseSolver {
     }
 
     if (this.viaAllowed[cellId]) {
+      let viaOccupants: ConnId[] | undefined
       for (let nz = 0; nz < this.layers; nz++) {
         if (nz === z) continue
         const nextFlatIdx = nz * this.planeSize + cellId
@@ -1227,8 +1229,10 @@ export class HighDensitySolverA03 extends BaseSolver {
           rippedHead,
           ripCount,
           0,
+          viaOccupants,
         )
         if (this._moveCost < 0) continue
+        viaOccupants = this._viaOccs
 
         const nextStateIdx = this.getSearchStateIdx(
           nextFlatIdx,
@@ -1271,6 +1275,7 @@ export class HighDensitySolverA03 extends BaseSolver {
     rippedHead: number,
     currentRipCount: number,
     lateralCost: number,
+    viaOccupants: ConnId[] | undefined,
   ): void {
     let cost = 0
     let head = rippedHead
@@ -1296,8 +1301,12 @@ export class HighDensitySolverA03 extends BaseSolver {
         return
       }
 
-      this.fillViaOccupants(toCellId, activeConn)
-      const occs = this._viaOccs
+      // Every destination layer uses the same all-layer copper footprint.
+      // Nothing mutates this scratch array between via neighbors.
+      if (viaOccupants === undefined) {
+        this.fillViaOccupants(toCellId, activeConn)
+      }
+      const occs: ConnId[] = viaOccupants ?? this._viaOccs
       for (let i = 0; i < occs.length; i++) {
         const occ = occs[i]!
         if (!this.ripChain.contains(head, occ)) {

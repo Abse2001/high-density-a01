@@ -50,6 +50,7 @@ type OccupancyProbe = {
     toRow: number,
     toCol: number,
     ripped: RippedNode | null,
+    viaOccupants: number[] | undefined,
   ): void
 }
 type CopperKind = "trace" | "via" | "diagonal"
@@ -142,6 +143,7 @@ const queryCopper = (
     1,
     kind === "diagonal" ? 0 : 1,
     null,
+    undefined,
   )
   const owners: number[] = []
   for (
