@@ -971,6 +971,7 @@ export class HighDensitySolverA01 extends BaseSolver {
 
     const segs: ConnectionSeg[] = []
     const seenSegmentKeys = new Set<string>()
+    const seenPhysicalSegmentKeys = new Set<string>()
 
     for (const [name, conn] of byName) {
       const pts = conn.points
@@ -996,6 +997,16 @@ export class HighDensitySolverA01 extends BaseSolver {
         seenSegmentKeys.add(segKey)
 
         // Shared grid cells do not make distinct terminal pairs interchangeable.
+        const physicalEndpointA = `${startPoint.x}:${startPoint.y}:${startPoint.z}`
+        const physicalEndpointB = `${endPoint.x}:${endPoint.y}:${endPoint.z}`
+        const orderedPhysicalEndpoints =
+          physicalEndpointA < physicalEndpointB
+            ? `${physicalEndpointA}|${physicalEndpointB}`
+            : `${physicalEndpointB}|${physicalEndpointA}`
+        const physicalSegmentKey = `${netName}|${orderedPhysicalEndpoints}`
+        if (seenPhysicalSegmentKeys.has(physicalSegmentKey)) continue
+        seenPhysicalSegmentKeys.add(physicalSegmentKey)
+
         segs.push({
           connId,
           startZ: s.z,
